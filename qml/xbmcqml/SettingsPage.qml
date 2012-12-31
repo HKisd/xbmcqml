@@ -2,7 +2,14 @@ import QtQuick 1.1
 import com.nokia.meego 1.0
 
 Page {
-    tools: commonTools
+    tools:    ToolBarLayout {
+            id: setTools
+            visible: true
+            ToolIcon {
+                platformIconId: "toolbar-back"
+                anchors.left: (parent === undefined) ? undefined : parent.left
+                onClicked: appWindow.pageStack.pop()
+            }}
     orientationLock: PageOrientation.LockPortrait
 
     Column {
@@ -13,6 +20,18 @@ Page {
             width: parent.width
             height: 30
             color: "#000000ff"
+        }
+        Text {
+            id: label0
+          //  anchors.horizontalCenter: parent.horizontalCenter
+            text: qsTr("XBMC Server name")
+            //font.pixelSize: 12
+        }
+        TextField {
+            //anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width
+            id: serverName
+            text: xbmcHttp.getName();
         }
         Text {
             id: label1
@@ -47,6 +66,7 @@ Page {
         Button {
             text: qsTr("Save")
             onClicked:{
+                xbmcHttp.setName(serverName.text)
                 xbmcHttp.setAddr(serverAddr.text)
                 xbmcHttp.setPort(serverPort.text)
                 xbmcHttp.saveSettings();

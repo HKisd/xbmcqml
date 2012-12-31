@@ -1,7 +1,14 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 Page {
-    tools: commonTools
+    tools: ToolBarLayout {
+                       id: aboutTools
+                       visible: true
+                       ToolIcon {
+                           platformIconId: "toolbar-back"
+                           anchors.left: (parent === undefined) ? undefined : parent.left
+                           onClicked: appWindow.pageStack.pop()
+                       }}
     orientationLock: PageOrientation.LockPortrait
     Column {
         spacing: 10
