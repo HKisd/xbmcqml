@@ -119,7 +119,7 @@ Page {
         }
     }
     Label {
-        text: xbmcHttp.getProperty("volume")
+        text: volSlider.value
     }
 
     Slider {
@@ -127,9 +127,10 @@ Page {
         anchors.bottom: volAmplSlider.top
         minimumValue: 0
         maximumValue: 100
-        value: xbmcHttp.serverVolume
+        value: xbmcHttp.getVolume();
         stepSize: 1
         valueIndicatorVisible: true
+        onValueChanged: {console.log(value); xbmcHttp.setVolume(value)}
     }
 
     Slider {

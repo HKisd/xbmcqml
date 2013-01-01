@@ -57,12 +57,21 @@ private slots:
         serverVolume = volume;
     }
 
+private:
+    void delay()
+    {
+        QTime dieTime= QTime::currentTime().addSecs(1);
+        while( QTime::currentTime() < dieTime )
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    }
+
+
 public:
     qint32 serverVolume;
     XbmcHttp() {
         settingsFile = "/home/user/.config/xbmcqml/xbmchttp2.ini";
         loadSettings();
-
+        serverVolume = -1;
     }
 
     ~XbmcHttp() {
@@ -295,6 +304,42 @@ public:
         qDebug("jees");
         return 0;
     }
+
+    Q_INVOKABLE void setVolume(const qint32 volume) {
+        QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+
+
+        QNetworkRequest request;
+        request.setUrl(QUrl("http://" + addr + ":" + port + "/jsonrpc"));
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+        //'{"jsonrpc": 2.0", "method": "Application.SetVolume", "params": { "value": ' +str(newvolume) + '}, "id": 1}'
+
+
+        QVariantMap map;
+        QVariantMap value;
+        value.insert("volume", volume);
+        map.insert("jsonrpc", "2.0");
+        map.insert("method", "Application.Setvolume");
+        map.insert("params", value);
+        map.insert("id","1");
+        QJson::Serializer serializer;
+        QByteArray data = serializer.serialize(map);
+        qDebug(data);
+        QString dataStr = QString::fromLatin1(data);
+
+        QNetworkReply * reply = nam->post(request, data);
+        //connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
+        connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+    }
+
+    Q_INVOKABLE quint32 getVolume() {
+        getProperty("volume");
+        delay();
+        //while (serverVolume == -1);
+        return serverVolume;
+    }
+
 };
 
 #endif // MAIN_H
