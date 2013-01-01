@@ -24,7 +24,7 @@ private:
     QString port;
     qint32 active;
 
-    qint32 serverVolume;
+
     struct Server {
         QString name;
         QString addr;
@@ -42,11 +42,23 @@ private slots:
     void parseVolume(QNetworkReply* preply)
     {
         QByteArray replydata = preply->readAll();
+        QJson::Parser driver;
+        bool ok;
+        QVariantMap result = driver.parse (replydata, &ok).toMap();
+        if (!ok) {
+          qFatal("An error occured during parsing");
+          exit (1);
+        }
+        QVariantMap nestedMap = result["result"].toMap();
+        qint32 volume = nestedMap["volume"].toInt();
         qDebug("replyFinished");
         qDebug(replydata);
+        qDebug() << volume;
+        serverVolume = volume;
     }
 
 public:
+    qint32 serverVolume;
     XbmcHttp() {
         settingsFile = "/home/user/.config/xbmcqml/xbmchttp2.ini";
         loadSettings();
@@ -252,7 +264,7 @@ public:
     Q_INVOKABLE qint32 getActive() {
         return active;
     }
-    Q_INVOKABLE qint32 getVolume() {
+    Q_INVOKABLE qint32 getProperty(const QString &key) {
         QNetworkAccessManager *nam = new QNetworkAccessManager(this);
 
         QNetworkRequest request;
@@ -265,7 +277,7 @@ public:
         QVariantMap map;
         QVariantMap prop;
 
-        propertyList << "volume";
+        propertyList << key;
         action.insert("properties", propertyList);
         map.insert("jsonrpc", "2.0");
         map.insert("method", "Application.GetProperties");

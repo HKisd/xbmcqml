@@ -51,7 +51,7 @@ Page {
             /*Button { height: b1_height; width: w_4; text: "Progs"
                 onClicked: xbmcHttp.sendAction("programs")}*/
             Button { height: b1_height; width: w_4; text: "GetVol"
-                onClicked: xbmcHttp.getVolume()}
+                onClicked: xbmcHttp.getProperty("volume")}
             /*Button { height: b1_height; width: w_4; text: "Watched"
                 onClicked: xbmcHttp.sendKey("0xf057")}*/
             /*Button { height: b1_height; width: w_4; text: "Video"}
@@ -119,15 +119,15 @@ Page {
         }
     }
     Label {
-        text: xbmcHttp.getVolume()
+        text: xbmcHttp.getProperty("volume")
     }
 
     Slider {
         id: volSlider
         anchors.bottom: volAmplSlider.top
-        minimumValue: -60
-        maximumValue: 0
-        value: xbmcHttp.getVolume()
+        minimumValue: 0
+        maximumValue: 100
+        value: xbmcHttp.serverVolume
         stepSize: 1
         valueIndicatorVisible: true
     }
