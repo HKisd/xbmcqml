@@ -30,9 +30,9 @@ Page {
     property int ws_4: (width-3*h_spacing)/4
 
     Column {
-        id: topButtons
+        id: topButtons2
         width: parent.width
-        height: parent.height
+        height: parent.height / 2
         anchors.top: parent.top
         spacing: 10
         Button { width: w_3; text: "Off"; id: boff;        anchors {
@@ -47,9 +47,11 @@ Page {
             Button { height: b1_height; width: w_4; text: "Music"
                 onClicked: xbmcHttp.activateWindow("music")}
             Button { height: b1_height; width: w_4; text: "Pics"
-                onClicked: xbmcHttp.sendAction("pictures")}
-            Button { height: b1_height; width: w_4; text: "Progs"
-                onClicked: xbmcHttp.sendAction("programs")}
+                onClicked: xbmcHttp.sendAction("picturhjjhes")}
+            /*Button { height: b1_height; width: w_4; text: "Progs"
+                onClicked: xbmcHttp.sendAction("programs")}*/
+            Button { height: b1_height; width: w_4; text: "GetVol"
+                onClicked: xbmcHttp.getVolume()}
             /*Button { height: b1_height; width: w_4; text: "Watched"
                 onClicked: xbmcHttp.sendKey("0xf057")}*/
             /*Button { height: b1_height; width: w_4; text: "Video"}
@@ -92,7 +94,7 @@ Page {
         }
 
         Row {
-            id: playButtons
+            id: playButtons2
             width: parent.width
             spacing: h_spacing
             Button { height: b2_height; width: ws_3; text: "<"
@@ -103,7 +105,7 @@ Page {
                 onClicked: xbmcHttp.sendAction("stepforward")}
         }
         Row {
-            id: stopButtons
+            id: stopButtons2
             width: parent.width
             spacing: h_spacing
             Button { height: b2_height; width: ws_4; text: "|<<"
@@ -116,62 +118,29 @@ Page {
                 onClicked: xbmcHttp.sendAction("bigstepforward")}
         }
     }
-    Column {
-        id: bottomButtons
-        width: parent.width
-        spacing: 10
-        anchors.bottom: parent.bottom
-        Row {
-            width: parent.width
-            spacing: h_spacing
-            Button { height: b3_height; width: ws_3; text: "Home"
-            //onClicked: xbmcHttp.sendKey("Input.ShowCodec")
-                onClicked: xbmcHttp.sendKey("Input.Home")
-            }
-            Button { height: b3_height; width: ws_3;
-                Text {text: "⇧"
-                    anchors.centerIn:parent
-                    font.pointSize: 80
-                }
-                onClicked: xbmcHttp.sendKey("Input.Up")
-            }
-            Button { height: b3_height; width: ws_3; text: "Mute"
-                onClicked: xbmcHttp.sendAction("mute")}
-        }
-        Row {
-            width: parent.width
-            spacing: h_spacing
-            Button { height: b3_height; width: ws_3;  Text {text: "⇦"
-                    anchors.centerIn:parent;font.pointSize: 80
-                }
-                onClicked: xbmcHttp.sendKey("Input.Left")
-            }
-            Button { height: b3_height; width: ws_3;
-                     text: "OK"; onClicked: xbmcHttp.sendKey("Input.Select")}
-            Button { height: b3_height; width: ws_3; Text {text: "⇨"
-                    anchors.centerIn:parent
-                    font.pointSize: 80
-                }
-                onClicked: xbmcHttp.sendKey("Input.Right")
-            }
-        }
-        Row {
-            width: parent.width
-            spacing: h_spacing
-            Button { height: b3_height; width: ws_3; text: "Aspect";
-                     onClicked: xbmcHttp.sendAction("aspectratio")}
-            Button { height: b3_height; width: ws_3; Text {text: "⇩"
-                    anchors.centerIn:parent
-                    font.pointSize: 80
-                   }
-                   onClicked: xbmcHttp.sendKey("Input.Down")}
-            Button { height: b3_height; width: ws_3; text: "Back";
-                   onClicked: xbmcHttp.sendKey("Input.Back")}
-        }
-        Rectangle{
-            width: parent.width
-            height: 10
-            color: "#000000ff"
-        }
+    Label {
+        text: xbmcHttp.getVolume()
     }
+
+    Slider {
+        id: volSlider
+        anchors.bottom: volAmplSlider.top
+        minimumValue: -60
+        maximumValue: 0
+        value: xbmcHttp.getVolume()
+        stepSize: 1
+        valueIndicatorVisible: true
+    }
+
+    Slider {
+        id: volAmplSlider
+        anchors.bottom: parent.bottom
+        minimumValue: 0
+        maximumValue: 60
+        value: 0
+        stepSize: 1
+        valueIndicatorVisible: true
+    }
+
+
 }

@@ -23,6 +23,8 @@ private:
     QString addr;
     QString port;
     qint32 active;
+
+    qint32 serverVolume;
     struct Server {
         QString name;
         QString addr;
@@ -33,14 +35,22 @@ private slots:
     void replyFinished(QNetworkReply* preply)
     {
         QByteArray replydata = preply->readAll();
+        qDebug("replyFinished");
         qDebug(replydata);
     }
+
+    void parseVolume(QNetworkReply* preply)
+    {
+        QByteArray replydata = preply->readAll();
+        qDebug("replyFinished");
+        qDebug(replydata);
+    }
+
 public:
     XbmcHttp() {
         settingsFile = "/home/user/.config/xbmcqml/xbmchttp2.ini";
         loadSettings();
-//        addr.append("192.168.1.102");
-//        port.append("9090");
+
     }
 
     ~XbmcHttp() {
@@ -75,7 +85,7 @@ public:
         QString dataStr = QString::fromLatin1(data);
 
         QNetworkReply * reply = nam->post(request, data);
-        connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
+        //connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
         connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
     }
 
@@ -100,7 +110,7 @@ public:
         QString dataStr = QString::fromLatin1(data);
 
         QNetworkReply * reply = nam->post(request, data);
-        connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
+        //connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
         connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
     }
 
@@ -124,7 +134,7 @@ public:
         QString dataStr = QString::fromLatin1(data);
 
         QNetworkReply * reply = nam->post(request, data);
-        connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
+        //connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
         connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
     }
 
@@ -168,7 +178,10 @@ public:
              xservers[i].port = settings.value("port").toString();
         }
         settings.endArray();
-        if (size > 0) {
+        name = "PC";
+        addr = "192.168.0.50";
+        port = "8080";
+        /*if (size > 0) {
             name = xservers[active].name;
             addr = xservers[active].addr;
             port = xservers[active].port;
@@ -176,7 +189,7 @@ public:
             name = "";
             addr = "";
             port = "";
-        }
+        }*/
     }
 
     Q_INVOKABLE void saveSettings(){
@@ -238,6 +251,37 @@ public:
     }
     Q_INVOKABLE qint32 getActive() {
         return active;
+    }
+    Q_INVOKABLE qint32 getVolume() {
+        QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+
+        QNetworkRequest request;
+        request.setUrl(QUrl("http://" + addr + ":" + port + "/jsonrpc"));
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+        QVariantList propertyList;
+        QVariantMap property;
+        QVariantMap action;
+        QVariantMap map;
+        QVariantMap prop;
+
+        propertyList << "volume";
+        action.insert("properties", propertyList);
+        map.insert("jsonrpc", "2.0");
+        map.insert("method", "Application.GetProperties");
+        map.insert("params", action);
+        map.insert("id", "1");
+
+        QJson::Serializer serializer;
+        QByteArray data = serializer.serialize(map);
+        QString dataStr = QString::fromLatin1(data);
+
+        qDebug(data);
+        QNetworkReply * reply = nam->post(request, data);
+        //connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
+        connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseVolume(QNetworkReply*)));
+        qDebug("jees");
+        return 0;
     }
 };
 
