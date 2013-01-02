@@ -24,6 +24,7 @@ Page {
     property int b2_height: height/8 //100
     property int b3_height: height/7 //100
     property int h_spacing: 10
+    property int ws_2: (width-h_spacing)/2
     property int w_3: width/3
     property int ws_3: (width-2*h_spacing)/3
     property int w_4: width/4
@@ -47,11 +48,11 @@ Page {
             Button { height: b1_height; width: w_4; text: "Music"
                 onClicked: xbmcHttp.activateWindow("music")}
             Button { height: b1_height; width: w_4; text: "Pics"
-                onClicked: xbmcHttp.sendAction("picturhjjhes")}
+                onClicked: xbmcHttp.sendAction("pictures")}
             /*Button { height: b1_height; width: w_4; text: "Progs"
                 onClicked: xbmcHttp.sendAction("programs")}*/
             Button { height: b1_height; width: w_4; text: "GetVol"
-                onClicked: xbmcHttp.getProperty("volume")}
+                onClicked: xbmcHttp.getProperty("drc")}
             /*Button { height: b1_height; width: w_4; text: "Watched"
                 onClicked: xbmcHttp.sendKey("0xf057")}*/
             /*Button { height: b1_height; width: w_4; text: "Video"}
@@ -117,31 +118,28 @@ Page {
             Button { height: b2_height; width: ws_4; text: ">>|"
                 onClicked: xbmcHttp.sendAction("bigstepforward")}
         }
+        Row {
+            id: ampButtons2
+            width: parent.width
+            spacing: h_spacing
+            Button { height: b2_height; width: ws_2; text: "VolAmp-"
+                onClicked: xbmcHttp.sendAction("volampdown")}
+            Button { height: b2_height; width: ws_2; text: "VolAmp+"
+                onClicked: xbmcHttp.sendAction("volampup")}
+        }
+        Label {
+            text: "Volume: " + volSlider.value
+        }
+        Slider {
+            id: volSlider
+            width: parent.width
+            minimumValue: 0
+            maximumValue: 100
+            value: xbmcHttp.getVolume();
+            stepSize: 1
+            valueIndicatorVisible: true
+            onValueChanged: {console.log(value); xbmcHttp.setVolume(value)}
+        }
     }
-    Label {
-        text: volSlider.value
-    }
-
-    Slider {
-        id: volSlider
-        anchors.bottom: volAmplSlider.top
-        minimumValue: 0
-        maximumValue: 100
-        value: xbmcHttp.getVolume();
-        stepSize: 1
-        valueIndicatorVisible: true
-        onValueChanged: {console.log(value); xbmcHttp.setVolume(value)}
-    }
-
-    Slider {
-        id: volAmplSlider
-        anchors.bottom: parent.bottom
-        minimumValue: 0
-        maximumValue: 60
-        value: 0
-        stepSize: 1
-        valueIndicatorVisible: true
-    }
-
 
 }
