@@ -111,7 +111,11 @@ Page {
             spacing: h_spacing
             Button { height: b2_height; width: ws_3; text: "<<"
                 onClicked: xbmcHttp.sendAction("rewind")}
-            Button { height: b2_height; width: ws_3; text: "Play"
+            Button { height: b2_height; width: ws_3;
+                     Text { text: "▶"
+                            anchors.centerIn:parent
+                            font.pointSize: 50
+                          }
                 onClicked: xbmcHttp.sendAction("play")}
             Button { height: b2_height; width: ws_3; text: ">>"
                 onClicked: xbmcHttp.sendAction("fastforward")}
@@ -122,7 +126,11 @@ Page {
             spacing: h_spacing
             Button { height: b2_height; width: ws_4; text: "|<"
                 onClicked: xbmcHttp.sendAction("previousscene")}
-            Button { height: b2_height; width: ws_4; text: "Stop"
+            Button { height: b2_height; width: ws_4;
+                     Text { text: "■"
+                            anchors.centerIn:parent
+                            font.pointSize: 60
+                          }
                 onClicked: xbmcHttp.sendAction("stop")}
             Button { height: b2_height; width: ws_4; text: "||"
                 onClicked: xbmcHttp.sendAction("playpause")}

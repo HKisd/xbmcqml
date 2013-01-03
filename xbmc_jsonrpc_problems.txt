@@ -1,0 +1,3 @@
+* executeAction "play" functions as playpause instead of pure play
+
+* bringing up shutdown menu with GUI.ActivateWindow works, but selecting anything from the menu crashes xbmc

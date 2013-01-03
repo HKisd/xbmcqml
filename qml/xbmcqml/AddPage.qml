@@ -52,7 +52,7 @@ Page {
             /*Button { height: b1_height; width: w_4; text: "Progs"
                 onClicked: xbmcHttp.sendAction("programs")}*/
             Button { height: b1_height; width: w_4; text: "GetVol"
-                onClicked: xbmcHttp.getProperty("drc")}
+                onClicked: xbmcHttp.getProperty("volume")}
             /*Button { height: b1_height; width: w_4; text: "Watched"
                 onClicked: xbmcHttp.sendKey("0xf057")}*/
             /*Button { height: b1_height; width: w_4; text: "Video"}

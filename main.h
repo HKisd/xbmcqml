@@ -23,6 +23,7 @@ private:
     QString addr;
     QString port;
     qint32 active;
+    QNetworkAccessManager *nam;
 
 
     struct Server {
@@ -35,7 +36,7 @@ private slots:
     void replyFinished(QNetworkReply* preply)
     {
         QByteArray replydata = preply->readAll();
-        qDebug("replyFinished");
+        qDebug("replyFinished2");
         qDebug(replydata);
     }
 
@@ -46,12 +47,17 @@ private slots:
         bool ok;
         QVariantMap result = driver.parse (replydata, &ok).toMap();
         if (!ok) {
-          qFatal("An error occured during parsing");
-          exit (1);
+          qDebug("An error occured during parsing");
+          return;
+          //exit (1);
         }
         QVariantMap nestedMap = result["result"].toMap();
+        qDebug("parseVolume");
+        qDebug() << nestedMap;
+        if(nestedMap.count() < 1)
+            return;
         qint32 volume = nestedMap["volume"].toInt();
-        qDebug("replyFinished");
+
         qDebug(replydata);
         qDebug() << volume;
         serverVolume = volume;
@@ -72,27 +78,14 @@ public:
         settingsFile = "/home/user/.config/xbmcqml/xbmchttp2.ini";
         loadSettings();
         serverVolume = -1;
+        nam = new QNetworkAccessManager(this);
+        connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseVolume(QNetworkReply*)));
     }
 
     ~XbmcHttp() {
     }
 
-    Q_INVOKABLE void sendKeyOrg(const QString &key) {
-        QString xbmchttp = "http://" + addr + ":" + port +
-                "/xbmcCmds/xbmcHttp?command=SendKey(" + key + ")";
-        QNetworkAccessManager *nam = new QNetworkAccessManager(this);
-        QNetworkReply* reply = nam->get(QNetworkRequest(xbmchttp));
-
-        connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
-        connect(reply, SIGNAL(readyRead()),reply, SLOT(deleteLater()));
-
-        //qDebug("send!\n");
-    }
-
     Q_INVOKABLE void sendKey(const QString &key) {
-        QNetworkAccessManager *nam = new QNetworkAccessManager(this);
-
-
         QNetworkRequest request;
         request.setUrl(QUrl("http://" + addr + ":" + port + "/jsonrpc"));
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -107,12 +100,12 @@ public:
 
         QNetworkReply * reply = nam->post(request, data);
         //connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
-        connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+
     }
 
 
     Q_INVOKABLE void sendAction(const QString &key) {
-        QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+        //QNetworkAccessManager *nam = new QNetworkAccessManager(this);
 
         QNetworkRequest request;
         request.setUrl(QUrl("http://" + addr + ":" + port + "/jsonrpc"));
@@ -132,11 +125,11 @@ public:
 
         QNetworkReply * reply = nam->post(request, data);
         //connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
-        connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+        //connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
     }
 
     Q_INVOKABLE void sendText(const QString &key) {
-        QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+        //QNetworkAccessManager *nam = new QNetworkAccessManager(this);
 
 
         QNetworkRequest request;
@@ -156,11 +149,11 @@ public:
 
         QNetworkReply * reply = nam->post(request, data);
         //connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
-        connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+        //connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
     }
 
     Q_INVOKABLE void activateWindow(const QString &key) {
-        QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+        //QNetworkAccessManager *nam = new QNetworkAccessManager(this);
 
 
         QNetworkRequest request;
@@ -179,8 +172,8 @@ public:
         QString dataStr = QString::fromLatin1(data);
 
         QNetworkReply * reply = nam->post(request, data);
-        connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
-        connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+        //connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
+        //connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
     }
 
     Q_INVOKABLE int testConn() {
@@ -199,10 +192,10 @@ public:
              xservers[i].port = settings.value("port").toString();
         }
         settings.endArray();
-        name = "PC";
+        /*name = "PC";
         addr = "192.168.0.50";
-        port = "8080";
-        /*if (size > 0) {
+        port = "8080";*/
+        if (size > 0) {
             name = xservers[active].name;
             addr = xservers[active].addr;
             port = xservers[active].port;
@@ -210,7 +203,7 @@ public:
             name = "";
             addr = "";
             port = "";
-        }*/
+        }
     }
 
     Q_INVOKABLE void saveSettings(){
@@ -274,7 +267,7 @@ public:
         return active;
     }
     Q_INVOKABLE qint32 getProperty(const QString &key) {
-        QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+        //QNetworkAccessManager *nam = new QNetworkAccessManager(this);
 
         QNetworkRequest request;
         request.setUrl(QUrl("http://" + addr + ":" + port + "/jsonrpc"));
@@ -300,13 +293,13 @@ public:
         qDebug(data);
         QNetworkReply * reply = nam->post(request, data);
         //connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
-        connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseVolume(QNetworkReply*)));
+        //connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseVolume(QNetworkReply*)));
         qDebug("jees");
         return 0;
     }
 
     Q_INVOKABLE void setVolume(const qint32 volume) {
-        QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+        //QNetworkAccessManager *nam = new QNetworkAccessManager(this);
 
 
         QNetworkRequest request;
@@ -330,7 +323,7 @@ public:
 
         QNetworkReply * reply = nam->post(request, data);
         //connect(reply, SIGNAL(readyRead()),nam, SLOT(deleteLater()));
-        connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+        //connect(nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
     }
 
     Q_INVOKABLE quint32 getVolume() {
